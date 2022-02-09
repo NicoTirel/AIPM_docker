@@ -16,8 +16,12 @@ print('Using {} device'.format(device))
 alexnet = alexnet.to(device)
 
 #resolution size list
-input_sizes = [112*(k+1) for k in range(20)]
+input_sizes = [112, 224, 448]
 
+#start of the experiments
+driver = parsers.JsonParser("/mnt/consommation")
+exp = experiment.Experiment(driver)
+p, q = exp.measure_yourself(period=2)
 
 for u,input_size in enumerate(input_sizes):
     #experiments protocol
@@ -27,10 +31,7 @@ for u,input_size in enumerate(input_sizes):
     #create a random image
     image_test = torch.rand(1,3,input_size,input_size)
     image_test = image_test.to(device)
-    #start of the experiments
-    driver = parsers.JsonParser("/mnt/consommation")
-    exp = experiment.Experiment(driver)
-    p, q = exp.measure_yourself(period=2)
+    
     for k in range(xps):
         print('Experience',k+1,'/',xps,'is running')
         latencies = []
@@ -49,4 +50,4 @@ for u,input_size in enumerate(input_sizes):
         #driver = parsers.JsonParser("input_"+str(input_size)+"/run_"+str(k))
         #write latency.csv next to power_metrics.json file
         np.savetxt("/mnt/input_"+str(input_size)+"_run_"+str(k)+"_latency.csv",np.array(latencies))
-    q.put(experiment.STOP_MESSAGE)
+q.put(experiment.STOP_MESSAGE)

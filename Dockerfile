@@ -13,7 +13,7 @@ WORKDIR  /
 
 # When it will be official, replace git clone by pip install en première intention
 #RUN pip3 install -i https://test.pypi.org/simple/ aipowermeter
-RUN git clone https://github.com/GreenAI-Uppa/AIPowerMeter AIPM
+RUN git clone -b docker_implementation https://github.com/GreenAI-Uppa/AIPowerMeter AIPM
 RUN cp AIPM/requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
@@ -24,4 +24,4 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Compare between interactive and non-interactive container
-#CMD ["python3", "/src/main.py"]
+CMD ["python3", "alexnet.py"]

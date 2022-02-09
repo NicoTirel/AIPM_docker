@@ -28,14 +28,14 @@ for u,input_size in enumerate(input_sizes):
     image_test = torch.rand(1,3,input_size,input_size)
     image_test = image_test.to(device)
     #start of the experiments
+    driver = parsers.JsonParser("/mnt/consommation")
+    exp = experiment.Experiment(driver)
+    p, q = exp.measure_yourself(period=2)
     for k in range(xps):
         print('Experience',k+1,'/',xps,'is running')
         latencies = []
         #AIPM
         input_image_size = (1,3,input_size,input_size)
-        driver = parsers.JsonParser(os.path.join(os.getcwd(),"input_"+str(input_size)+"/run_"+str(k)))
-        exp = experiment.Experiment(driver)
-        p, q = exp.measure_yourself(period=2)
         start_xp = time.time()
         for t in range(iters):
             #print(t)
@@ -44,9 +44,9 @@ for u,input_size in enumerate(input_sizes):
             res = time.time()-start_iter
             #print(t,'latency',res)
             latencies.append(res)
-        q.put(experiment.STOP_MESSAGE)
         end_xp = time.time()
         print("power measuring stopped after",end_xp-start_xp,"seconds for experience",k+1,"/",xps)
         #driver = parsers.JsonParser("input_"+str(input_size)+"/run_"+str(k))
         #write latency.csv next to power_metrics.json file
-        np.savetxt("input_"+str(input_size)+"/run_"+str(k)+"/latency.csv",np.array(latencies))
+        np.savetxt("/mnt/input_"+str(input_size)+"_run_"+str(k)+"_latency.csv",np.array(latencies))
+    q.put(experiment.STOP_MESSAGE)
